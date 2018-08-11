@@ -1,27 +1,21 @@
-# client2.py
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import socket
+import sys
+from socket import socket, AF_INET, SOCK_DGRAM
 
-TCP_IP = 'localhost'
-TCP_PORT = 9001
-BUFFER_SIZE = 1024
+SERVER_IP   = '192.168.43.144'
+PORT_NUMBER = 5000
+SIZE = 1024
+print ("Test client sending packets to IP {0}, via port {1}\n".format(SERVER_IP, PORT_NUMBER))
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((TCP_IP, TCP_PORT))
-with open('received_file', 'wb') as f:
-    print ('file opened')
-    while True:
-        #print('receiving data...')
-        data = s.recv(BUFFER_SIZE)
-        print('data=%s', (data))
-        if not data:
-            f.close()
-            print ('file close()')
-            break
-        # write data to a file
-        f.write(data)
+mySocket = socket( AF_INET, SOCK_DGRAM )
+myMessage = "Hello!"
+myMessage1 = ""
+i = 0
+while i < 10:
+    mySocket.sendto(myMessage.encode('utf-8'),(SERVER_IP,PORT_NUMBER))
+    i = i + 1
 
-print('Successfully get the file')
-s.close()
-print('connection closed')
+mySocket.sendto(myMessage1.encode('utf-8'),(SERVER_IP,PORT_NUMBER))
+
+sys.exit()
