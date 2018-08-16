@@ -14,5 +14,5 @@ print ("Test server listening on port {0}\n".format(PORT_NUMBER))
 
 while True:
     (data,addr) = mySocket.recvfrom(SIZE)
-    print data
+    print (data)
 sys.exit()
