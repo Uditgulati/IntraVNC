@@ -43,6 +43,7 @@ if __name__ == '__main__':
 
 	ip = getMyIP()
 	print('Server IP address: ' + str(ip))
+	print('Port no.: ' + str(port))
 
 	s.listen(1)
 	print("Now listening: ")

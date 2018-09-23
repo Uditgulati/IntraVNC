@@ -51,8 +51,8 @@ def getResolutionWidth():
 
 
 if __name__ == '__main__':
-	host = '192.168.225.54'
-	port = 5009
+	host = raw_input('Enter Server IP address: ')
+	port = int(raw_input('Enter port: '))
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((host, port))
