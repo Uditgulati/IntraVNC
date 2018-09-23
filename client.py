@@ -4,6 +4,7 @@ import numpy as np
 import pyscreenshot
 import imutils
 from cStringIO import StringIO
+import subprocess
 
 
 
@@ -35,10 +36,22 @@ def recieveNumpy(c):
 		print 'frame received'
 		return final_image
 
+def getResolutionWidth():
+	cmd = ['xrandr']
+	cmd2 = ['grep', '*']
+	p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+	p2 = subprocess.Popen(cmd2, stdin=p.stdout, stdout=subprocess.PIPE)
+	p.stdout.close()
+
+	resolution_string, junk = p2.communicate()
+	resolution = resolution_string.split()[0]
+	width, height = resolution.split('x')
+	return width
+
 
 if __name__ == '__main__':
-	host = raw_input('Enter Server IP address: ')
-	port = int(raw_input('Enter port: '))
+	host = '192.168.225.54'
+	port = 5009
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((host, port))
@@ -47,10 +60,14 @@ if __name__ == '__main__':
 	while(message.lower() != 'quit'):
 		s.send(message)
 		frame = recieveNumpy(s)
+		h, w, channels = frame.shape
+		width = int(getResolutionWidth())
+		height = width * h / w
 		print("Recieved from server: ")
 		cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
 		cv2.setWindowProperty("Frame",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
-		cv2.imshow('Frame', frame)
+		frame_scaled = cv2.resize(frame, (width, height))
+		cv2.imshow('Frame', frame_scaled)
 		if cv2.waitKey(25) & 0xFF == ord('q'):
 			break
 	s.close()
