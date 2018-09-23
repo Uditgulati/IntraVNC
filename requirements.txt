@@ -1,0 +1,13 @@
+imutils==0.5.1
+numpy==1.14.0
+opencv-python==3.4.3.18
+packaging==16.8
+Pillow==3.1.2
+PyAudio==0.2.11
+PyAutoGUI==0.9.38
+pynput==1.4
+pyscreenshot==0.4.2
+scipy==1.1.0
+subprocess.run==0.0.8
+subprocess32==3.2.7
+websocket-client==0.18.0

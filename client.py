@@ -6,7 +6,6 @@ import imutils
 from cStringIO import StringIO
 import subprocess
 from pynput.mouse import Button, Controller
-from mouse_input import monitorMouse
 
 
 
@@ -53,14 +52,14 @@ def getResolutionWidth():
 
 if __name__ == '__main__':
 	host = '192.168.225.54'
-	port = 5005
+	port = 5009
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((host, port))
 
 	mouse = Controller()
 
-	mouse_listener = monitorMouse()
+	#mouse_listener = monitorMouse()
 
 	width = int(getResolutionWidth())
 	height = 0
@@ -68,9 +67,6 @@ if __name__ == '__main__':
 	message = raw_input('-> ')
 	flag = False
 	while(message.lower() != 'quit'):
-		if mouse_listener.left_click:
-			mouse_listener.left_click = False
-			print('Left click recorded.')
 		s.send(str(mouse.position))
 		frame = recieveNumpy(s)
 		h, w, channels = frame.shape
@@ -82,6 +78,6 @@ if __name__ == '__main__':
 			cv2.setWindowProperty('Frame', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 			flag = True
 		cv2.imshow('Frame', frame_scaled)
-		if cv2.waitKey(5) & 0xFF == ord('q'):
+		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
 	s.close()
