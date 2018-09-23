@@ -37,8 +37,8 @@ def recieveNumpy(c):
 
 
 if __name__ == '__main__':
-	host = '127.0.0.1'
-	port = 5001
+	host = raw_input('Enter Server IP address: ')
+	port = int(raw_input('Enter port: '))
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((host, port))
@@ -48,6 +48,8 @@ if __name__ == '__main__':
 		s.send(message)
 		frame = recieveNumpy(s)
 		print("Recieved from server: ")
+		cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
+		cv2.setWindowProperty("Frame",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 		cv2.imshow('Frame', frame)
 		if cv2.waitKey(25) & 0xFF == ord('q'):
 			break

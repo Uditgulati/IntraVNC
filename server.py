@@ -8,6 +8,14 @@ from cStringIO import StringIO
 
 
 
+def getMyIP():
+	mySock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	mySock.connect(('8.8.8.8', 80))
+	ip = mySock.getsockname()[0]
+	mySock.close()
+	return ip
+
+
 def sendNumpy(c, image):
 		if not isinstance(image, np.ndarray):
 			print 'not a valid numpy image'
@@ -27,17 +35,18 @@ def sendNumpy(c, image):
 
 if __name__ == '__main__':
 	host = ''
-	port = 5001
+	port = 5009
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.bind((host, port))
+
+	ip = getMyIP()
+	print('Server IP address: ' + str(ip))
 
 	s.listen(1)
 	print("Now listening: ")
 	c, addr = s.accept()
 	print("Connection recieved: " + str(addr))
-
-	cap = cv2.VideoCapture(0)
 
 	while True:
 		data = c.recv(1024)
