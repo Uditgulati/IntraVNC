@@ -5,6 +5,8 @@ import pyscreenshot
 import imutils
 from cStringIO import StringIO
 import subprocess
+from pynput.mouse import Button, Controller
+from mouse_input import monitorMouse
 
 
 
@@ -51,23 +53,35 @@ def getResolutionWidth():
 
 if __name__ == '__main__':
 	host = '192.168.225.54'
-	port = 5009
+	port = 5005
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((host, port))
 
-	message = raw_input("-> ")
+	mouse = Controller()
+
+	mouse_listener = monitorMouse()
+
+	width = int(getResolutionWidth())
+	height = 0
+
+	message = raw_input('-> ')
+	flag = False
 	while(message.lower() != 'quit'):
-		s.send(message)
+		if mouse_listener.left_click:
+			mouse_listener.left_click = False
+			print('Left click recorded.')
+		s.send(str(mouse.position))
 		frame = recieveNumpy(s)
 		h, w, channels = frame.shape
-		width = int(getResolutionWidth())
 		height = width * h / w
 		print("Recieved from server: ")
-		cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
-		cv2.setWindowProperty("Frame",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 		frame_scaled = cv2.resize(frame, (width, height))
+		if flag == False:
+			cv2.namedWindow('Frame', cv2.WND_PROP_FULLSCREEN)
+			cv2.setWindowProperty('Frame', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+			flag = True
 		cv2.imshow('Frame', frame_scaled)
-		if cv2.waitKey(25) & 0xFF == ord('q'):
+		if cv2.waitKey(5) & 0xFF == ord('q'):
 			break
 	s.close()
