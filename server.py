@@ -6,6 +6,7 @@ import pyscreenshot
 import imutils
 from cStringIO import StringIO
 from pynput.mouse import Button, Controller
+import subprocess
 
 
 
@@ -34,9 +35,34 @@ def sendNumpy(c, image):
 		print 'image sent'
 
 
+def getResolutionWidth():
+	cmd = ['xrandr']
+	cmd2 = ['grep', '*']
+	p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+	p2 = subprocess.Popen(cmd2, stdin=p.stdout, stdout=subprocess.PIPE)
+	p.stdout.close()
+
+	resolution_string, junk = p2.communicate()
+	resolution = resolution_string.split()[0]
+	width, height = resolution.split('x')
+	return width
+
+def getResolutionHeight():
+	cmd = ['xrandr']
+	cmd2 = ['grep', '*']
+	p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+	p2 = subprocess.Popen(cmd2, stdin=p.stdout, stdout=subprocess.PIPE)
+	p.stdout.close()
+
+	resolution_string, junk = p2.communicate()
+	resolution = resolution_string.split()[0]
+	width, height = resolution.split('x')
+	return height
+
+
 if __name__ == '__main__':
 	host = ''
-	port = 5006
+	port = 5007
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.bind((host, port))
@@ -52,16 +78,22 @@ if __name__ == '__main__':
 
 	mouse = Controller()
 
+	width = int(getResolutionWidth())
+	height = int(getResolutionHeight())
+
 	while True:
 		data = c.recv(1024)
+		if data[0] == '1':
+			data = data[1:]
+			mouse.press(Button.left)
+			mouse.release(Button.left)
 		val = [x.strip() for x in data.split(',')]
 		print(val)
 		val1 = (float(val[0][1:]), float(val[1][:-1]))
-		val1[0] *= height / 100.00
-		val1[0] *= width / 100.00
-		val1 = int(val1)
-		print(val1)
-		mouse.position = val1
+		v0 = val1[0] * height / 100.00
+		v1 = val1[1] * width / 100.00
+		print(v0, v1)
+		mouse.position = (int(v0), int(v1))
 		if not data:
 			break
 		print("From Connected user: " + str(data))

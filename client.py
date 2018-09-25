@@ -22,7 +22,7 @@ def recieveNumpy(c):
 			while True:
 				if length is None:
 					if ':' not in ultimate_buffer:
-					    break
+						break
 					# remove the length bytes from the front of ultimate_buffer
 					# leave any remaining bytes in the ultimate_buffer!
 					length_str, ignored, ultimate_buffer = ultimate_buffer.partition(':')
@@ -65,7 +65,7 @@ def getResolutionHeight():
 
 if __name__ == '__main__':
 	host = '192.168.225.46'
-	port = 5005
+	port = 5006
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((host, port))
@@ -80,12 +80,15 @@ if __name__ == '__main__':
 	message = raw_input('-> ')
 	flag = False
 	while(message.lower() != 'quit'):
+		to_send = str()
 		if mouse_listener.left_click:
 			mouse_listener.left_click = False
 			print('Left click detected.')
+			to_send += str('1')
 		scale_position = (mouse.position[0] * 100.00 / height,\
 			mouse.position[1] * 100.00 / width)
-		s.send(str(scale_position))
+		
+		s.send(to_send)
 		frame = recieveNumpy(s)
 		h, w, channels = frame.shape
 		height = width * h / w
