@@ -36,7 +36,7 @@ def sendNumpy(c, image):
 
 if __name__ == '__main__':
 	host = ''
-	port = 5005
+	port = 5006
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.bind((host, port))
@@ -56,7 +56,10 @@ if __name__ == '__main__':
 		data = c.recv(1024)
 		val = [x.strip() for x in data.split(',')]
 		print(val)
-		val1 = (int(val[0][1:]), int(val[1][:-1]))
+		val1 = (float(val[0][1:]), float(val[1][:-1]))
+		val1[0] *= height / 100.00
+		val1[0] *= width / 100.00
+		val1 = int(val1)
 		print(val1)
 		mouse.position = val1
 		if not data:

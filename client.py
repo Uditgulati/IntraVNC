@@ -6,6 +6,7 @@ import imutils
 from cStringIO import StringIO
 import subprocess
 from pynput.mouse import Button, Controller
+from mouse_input import monitorMouse
 
 
 
@@ -49,25 +50,42 @@ def getResolutionWidth():
 	width, height = resolution.split('x')
 	return width
 
+def getResolutionHeight():
+	cmd = ['xrandr']
+	cmd2 = ['grep', '*']
+	p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+	p2 = subprocess.Popen(cmd2, stdin=p.stdout, stdout=subprocess.PIPE)
+	p.stdout.close()
+
+	resolution_string, junk = p2.communicate()
+	resolution = resolution_string.split()[0]
+	width, height = resolution.split('x')
+	return height
+
 
 if __name__ == '__main__':
-	host = raw_input('Enter Server IP address: ')
-	port = int(raw_input('Enter port: '))
+	host = '192.168.225.46'
+	port = 5005
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((host, port))
 
 	mouse = Controller()
 
-	#mouse_listener = monitorMouse()
+	mouse_listener = monitorMouse()
 
 	width = int(getResolutionWidth())
-	height = 0
+	height = int(getResolutionHeight())
 
 	message = raw_input('-> ')
 	flag = False
 	while(message.lower() != 'quit'):
-		s.send(str(mouse.position))
+		if mouse_listener.left_click:
+			mouse_listener.left_click = False
+			print('Left click detected.')
+		scale_position = (mouse.position[0] * 100.00 / height,\
+			mouse.position[1] * 100.00 / width)
+		s.send(str(scale_position))
 		frame = recieveNumpy(s)
 		h, w, channels = frame.shape
 		height = width * h / w
